@@ -67,31 +67,46 @@ bool wirte_jpg(
 
 
 int main (int argc,char *argv[]){
+
+        char *f = "./2.mp4";
+
     AVFormatContext *fmt_ctx = NULL;
 
     AVFrame *frame =  NULL;
 
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <video>\n", argv[0]);
-        exit(1);
-    }
+    // if (argc != 2) {
+    //     fprintf(stderr, "Usage: %s <video>\n", argv[0]);
+    //     exit(1);
+    // }
 
-    if (avformat_open_input(&fmt_ctx,argv[1],NULL,NULL) < 0/* condition */)
+    // if (avformat_open_input(&fmt_ctx,argv[1],NULL,NULL) < 0/* condition */)
+    if (avformat_open_input(&fmt_ctx,f,NULL,NULL) < 0/* condition */)
     {
         fprintf(stderr, "Could not find stream information\n");
         exit(1);
     }
+// Retrieve stream information.
+	if (avformat_find_stream_info(fmt_ctx, NULL) < 0) {
+		return -1; // Couldn't find stream information.
+	}
     // 解码
-    AVCodec *dec = NULL;
+    // AVCodec *dec = NULL;
 
     // 用于函数成功的返回值判断，会被多个函数返回赋值
     int ret;
 
     // 找到视频流的索引，与视频流的默认使用的解码器
-    int  video_stream_idx = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,&dec,0);
+    // int  video_stream_idx = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,&dec,0);
+    int  video_stream_idx = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,NULL,0);
     printf("%d",video_stream_idx );
     // printf("",fmt_ctx->streams[video_stream_idx ]);
     // 将上面找到的解码器分配 AVCodecContext 与内存
+
+    AVCodecParameters * avcodecParameters = fmt_ctx->streams[video_stream_idx]->codecpar;
+    enum AVCodecID codecId = avcodecParameters->codec_id;
+
+    AVCodec * codec = avcodec_find_decoder(codecId);
+
     AVCodecContext *dec_ctx = avcodec_alloc_context3(NULL);
     // AVCodecContext *dec_ctx = avcodec_alloc_context3(dec);
     if (!dec_ctx) {
@@ -99,7 +114,6 @@ int main (int argc,char *argv[]){
         return AVERROR(EINVAL);
     }
     // 再将视频流中的参数加载到 AVCodecContext上
-    AVCodecParameters * avcodecParameters = fmt_ctx->streams[video_stream_idx]->codecpar;
     ret = avcodec_parameters_to_context(dec_ctx,avcodecParameters);
 
     if (ret < 0) {
@@ -107,7 +121,7 @@ int main (int argc,char *argv[]){
         return ret;
     }
     // 打开解码器
-    ret = avcodec_open2(dec_ctx,dec,0);
+    ret = avcodec_open2(dec_ctx,codec,0);
         if (ret < 0) {
             fprintf(stderr, "Failed to open %s codec\n");
             return ret;
