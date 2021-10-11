@@ -68,7 +68,8 @@ bool wirte_jpg(
 
 int main (int argc,char *argv[]){
 
-        char *f = "./2.mp4";
+        // char *f = "./1.flv";
+        char *f = "./1.mp4";
 
     AVFormatContext *fmt_ctx = NULL;
 
@@ -156,30 +157,62 @@ int main (int argc,char *argv[]){
         SWS_BILINEAR,NULL,NULL,NULL);
     // sws_ctx = sws_getContext(dec_ctx->width,dec_ctx->height,dec_ctx->pix_fmt,dec_ctx->width,dec_ctx->height,AV_PIX_FMT_RGB24,SWS_BILINEAR,NULL,NULL,NULL);
 
-    ret = av_read_frame(fmt_ctx,pkt);
+    // 读取帧
+    int currentIdx=0;
+
+    /**
+     * ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 1.mp4
+     * 经过测试 av_read_frame 并 avcodec_receive_frame 成功与上面 ffprobe 从命令行下得到的视频总帧数，有过一帧的差距
+     */
+
+    while (av_read_frame(fmt_ctx,pkt)>=0/* condition */)
+    {
     if (pkt->stream_index == video_stream_idx){
-        ret = avcodec_send_packet(dec_ctx,pkt);
-        if (ret < 0) {
-        fprintf(stderr, "Error sending a packet for decoding\n");
-        exit(1);
-        }
-        else
+        avcodec_send_packet(dec_ctx,pkt);
+
+        ret = avcodec_receive_frame(dec_ctx,frame);
+        // 解码成功
+        if (ret==0)
         {
-            ret = avcodec_receive_frame(dec_ctx,frame);
-            sws_scale(sws_ctx,(uint8_t const * const *) frame->data,frame->linesize,0,dec_ctx->height,framergb->data,framergb->linesize);
-
-            char *dst = "./out.jpg";
-             struct jpeg_error_mgr jerr;
-            JpegData jpg = {
-                .data = framergb->data[0],
-                .width = framergb->width,
-                .height = framergb->height,
-                .ch = 3,
-            };
-
-            wirte_jpg(&jpg,dst,&jerr);
+            currentIdx++;
+            if (currentIdx==4894) {
+            printf("%d\n",2);
+            }
+            printf("%d\n",currentIdx);
         }
     }
+    }
+    // ret = av_read_frame(fmt_ctx,pkt);
+    // if (pkt->stream_index == video_stream_idx){
+    //     ret = avcodec_send_packet(dec_ctx,pkt);
+    //     if (ret < 0) {
+    //     fprintf(stderr, "Error sending a packet for decoding\n");
+    //     exit(1);
+    //     }
+    //     else
+    //     {
+    //         // AVERROR(EAGAIN);
+    //         ret = avcodec_receive_frame(dec_ctx,frame);
+    //         // 解码成功
+    //         if (ret == 0)
+    //         {
+    //             /* code */
+    //         }
+            
+    //         sws_scale(sws_ctx,(uint8_t const * const *) frame->data,frame->linesize,0,dec_ctx->height,framergb->data,framergb->linesize);
+
+    //         // char *dst = "./out.jpg";
+    //         //  struct jpeg_error_mgr jerr;
+    //         // JpegData jpg = {
+    //         //     .data = framergb->data[0],
+    //         //     .width = framergb->width,
+    //         //     .height = framergb->height,
+    //         //     .ch = 3,
+    //         // };
+
+    //         // wirte_jpg(&jpg,dst,&jerr);
+    //     }
+    // }
 
     return 0;
 }
