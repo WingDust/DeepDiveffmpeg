@@ -174,11 +174,31 @@ int main (int argc,char *argv[]){
         // 解码成功
         if (ret==0)
         {
+            // av_write_frame(fmt_ctx,pkt);
+            sws_scale(sws_ctx,
+            (uint8_t const * const *) frame->data,
+            frame->linesize,
+            0,
+            dec_ctx->height,
+            framergb->data,
+            framergb->linesize
+            );
             currentIdx++;
-            if (currentIdx==4894) {
-            printf("%d\n",2);
+            char *dst = "./out.rgb";
+            char *yuv = "./out.yuv";
+            if (currentIdx==1){
+                // FILE *o = fopen(dst,"wb+");
+                // fwrite(framergb->data[0],(frame->width)*(frame->height)*3,1,o);
+                // FILE *o = fopen(yuv,"wb+");
+                // fwrite(frame->data[0],1,(frame->width)*(frame->height),o);
+                // fwrite(frame->data[1],1,(frame->width)*(frame->height)/4,o);
+                // fwrite(frame->data[2],1,(frame->width)*(frame->height)/4,o);
+                // fclose(o);
             }
-            printf("%d\n",currentIdx);
+            // if (currentIdx==4894) {
+            // printf("%d\n",2);
+            // }
+            // printf("%d\n",currentIdx);
         }
     }
     }
