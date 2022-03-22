@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "ctype.h": "c",
+        "avutil.h": "c",
+        "avformat.h": "c",
+        "jpeglib.h": "c",
+        "imgutils.h": "c",
+        "stdio.h": "c",
+        "def_enums.h": "c",
+        "cstdint": "cpp",
+        "format.h": "c",
+        "stdint.h": "c"
+    }
+}

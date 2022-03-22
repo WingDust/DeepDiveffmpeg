@@ -1,0 +1,32 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "compile",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "${file}",
+                "-lavutil",
+                "-lavformat",
+                "-lavcodec",
+                "-lswscale",
+                "-ljpeg",
+                "-g",
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "调试器生成的任务。"
+        }
+    ],
+    "version": "2.0.0"
+}
