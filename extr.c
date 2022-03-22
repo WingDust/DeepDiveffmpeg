@@ -8,6 +8,7 @@
 #include <libavutil/imgutils.h>
 
 // 测试读取的帧数据的正确，所以写入到一个jpg文件来做测试
+// [Read/write JPEG image with libjpeg](https://gist.github.com/kentakuramochi/f64e7646f1db8335c80f131be8359044)
 #include <jpeglib.h>
 #include <stdio.h>
 #include <stdbool.h>

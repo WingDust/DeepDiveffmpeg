@@ -1,0 +1,16 @@
+[package]
+name = "my-project"
+version = "0.1.0"
+authors = ["wingdust"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build]
+# 传给 rustc 参数与 gcc -L 意义相似，在当前目录下查找库文件
+rustflags = ["-L ."]
+
+[dependencies]
+
+# [build-dependencies]
+# cc = "1"
